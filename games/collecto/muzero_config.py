@@ -3,9 +3,11 @@ import os
 
 import torch
 
+
 class MuZeroConfig:
     def __init__(self):
         self.seed = 0
+        self.max_num_gpus = None
 
         ### Game
         self.observation_shape = (7, 7, 7)
