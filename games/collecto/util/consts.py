@@ -1,5 +1,5 @@
 from games.collecto.colour import Colour
-E = 'empty'
+E = Colour('empty')
 P = Colour('purple')
 O = Colour('orange')
 G = Colour('green')
