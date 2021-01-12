@@ -26,7 +26,8 @@ class Collecto:
         return self.get_observation()
 
     def step(self, action):
-        new_board, balls = self._do_action(self.board, action)
+        print(action)
+        new_board, balls = self._do_action(self.board, Action.from_num(action))
         self._balls_of_players[self.player].extend(balls)
 
         done = self.have_winner() or len(self.legal_actions()) == 0
@@ -60,7 +61,7 @@ class Collecto:
                 except InvalidMoveException:
                     continue
                 if balls:
-                    legal_actions.append(action)
+                    legal_actions.append(action.to_num())
         return legal_actions
 
     def have_winner(self):

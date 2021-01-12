@@ -7,7 +7,7 @@ class Action:
         self.index = index
 
     def to_num(self):
-        return self.index + (self.direction - 1) * 7
+        return self.index + (self.direction.value - 1) * 7
 
     @classmethod
     def from_num(cls, num):

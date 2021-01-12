@@ -55,7 +55,7 @@ class Board:
                 if place == E:
                     ve += "|   "
                 else:
-                    ve += "| " + place.get_cap() + " "
+                    ve += "| " + place.cap + " "
             ve += "|"
             print(ve)
         print(line)
