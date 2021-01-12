@@ -2,6 +2,8 @@ from games.collecto.action import Action
 from games.collecto.collecto import Collecto
 from games.abstract_game import AbstractGame
 
+from games.collecto.muzero_config import MuZeroConfig
+
 
 class Game(AbstractGame):
     def __init__(self, seed=None):
