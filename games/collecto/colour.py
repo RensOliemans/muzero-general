@@ -15,5 +15,8 @@ class Colour:
     def __eq__(self, other):
         return self.colour == other.colour
 
+    def __lt__(self, other):
+        return self.colour < other.colour
+
     def __hash__(self):
         return hash(self.colour)

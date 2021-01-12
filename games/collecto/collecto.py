@@ -1,4 +1,5 @@
 import random
+from itertools import groupby
 
 import numpy as np
 
@@ -26,8 +27,7 @@ class Collecto:
         return self.get_observation()
 
     def step(self, action):
-        print(action)
-        new_board, balls = self._do_action(self.board, Action.from_num(action))
+        self.board, balls = self._do_action(self.board, Action.from_num(action))
         self._balls_of_players[self.player].extend(balls)
 
         done = self.have_winner() or len(self.legal_actions()) == 0
@@ -68,11 +68,15 @@ class Collecto:
         return len(self.legal_actions()) == 0 and self.is_winner()
 
     def is_winner(self):
-        other_player = self.player * -1
+        return self.player == self._calculate_winner()
 
-        points = {1: sum([x // 3 for x in self._balls_of_players[1]]),
-                  -1: sum([x // 3 for x in self._balls_of_players[-1]])}
-        return points[self.player] > points[other_player]
+    def _calculate_winner(self):
+        points = {}
+        for player in self._balls_of_players.keys():
+            balls = self._balls_of_players[player]
+            groups = groupby(sorted(balls))
+            points[player] = sum([len(list(b)) // 3 for _, b in groups])
+        return max(points, key=lambda x: points[x])
 
     def render(self):
         print(self.board)
