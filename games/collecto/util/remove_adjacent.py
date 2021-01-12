@@ -1,7 +1,7 @@
 import numpy as np
 
-from util.consts import E
-from board import Board
+from games.collecto.util.consts import E
+from games.collecto.board import Board
 
 
 def remove_adjacent(board):

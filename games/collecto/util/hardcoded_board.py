@@ -1,4 +1,4 @@
-from util.consts import *
+from games.collecto.util.consts import *
 
 # Bord uit de spelregels gehardcode
 def get_board():
