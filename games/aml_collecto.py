@@ -1,4 +1,4 @@
-from action import Action
+from games.collecto.action import Action
 from games.collecto.collecto import Collecto
 from games.abstract_game import AbstractGame
 
