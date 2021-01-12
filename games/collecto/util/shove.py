@@ -2,12 +2,10 @@ import numpy as np
 
 from games.collecto.action import Direction, transpose_direction
 from games.collecto.util.consts import E
-from games.collecto.board import Board
 from games.collecto.util.exceptions import InvalidMoveException
 
 
 def shove_board(board, action):
-    # board = np.array(board)
     if action.direction is Direction.LEFT or action.direction is Direction.RIGHT:
         row = board[action.index]
         board[action.index] = shove(row, action.direction)
