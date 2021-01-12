@@ -17,7 +17,7 @@ def shove_board(board, action):
         row = board[action.index]
         board[action.index] = shove(row, transposed_direction)
         board = np.transpose(board)
-    return Board(board)
+    return board
 
 
 def shove(row, direction):

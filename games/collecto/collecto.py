@@ -57,7 +57,7 @@ class Collecto:
             for direction in Direction:
                 action = Action(direction, i)
                 try:
-                    _, balls = self._do_action(self.board, action)
+                    _, balls = self._do_action(np.copy(self.board), action)
                 except InvalidMoveException:
                     continue
                 if balls:
@@ -83,4 +83,4 @@ class Collecto:
     @staticmethod
     def _do_action(board, action):
         new_board = shove_board(board, action)
-        return remove_adjacent(new_board.board)
+        return remove_adjacent(new_board)

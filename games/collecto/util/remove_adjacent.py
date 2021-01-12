@@ -12,7 +12,7 @@ def remove_adjacent(board):
     for x, (i, j) in equal_neighbours:
         new_board[i][j] = E
         balls.append(x)
-    return Board(new_board), balls
+    return new_board, balls
 
 
 def _get_equal_neighbours(board):
