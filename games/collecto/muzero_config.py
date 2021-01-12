@@ -16,7 +16,7 @@ class MuZeroConfig:
         self.stacked_observations = 0
         # Evaluate
         self.muzero_player = 0
-        self.opponent = None
+        self.opponent = "random"
 
         ### Self-Play
         # todo: tune params
@@ -70,7 +70,7 @@ class MuZeroConfig:
         self.value_loss_weight = 1
         self.train_on_gpu = torch.cuda.is_available()
 
-        self.optimizer = "Adam"
+        self.optimizer = "SGD"
         self.weight_decay = 1e-4
         self.momentum = 0.9
 
@@ -95,7 +95,7 @@ class MuZeroConfig:
         self.training_delay = 0
         self.ratio = None
 
-    def visit_softmax_temperature_fn(self, traained_steps):
+    def visit_softmax_temperature_fn(self, trained_steps):
         return 1
 
 
