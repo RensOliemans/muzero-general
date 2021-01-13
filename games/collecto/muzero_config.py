@@ -64,7 +64,7 @@ class MuZeroConfig:
                                          os.path.basename(__file__)[:-3], datetime.datetime.now().strftime(
                 "%Y-%m-%d--%H-%M-%S"))  # Path to store the model weights and TensorBoard logs
         self.save_model = True
-        self.training_steps = 10000
+        self.training_steps = 100
         self.batch_size = 128
         self.checkpoint_interval = 10
         self.value_loss_weight = 1
