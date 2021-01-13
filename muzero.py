@@ -356,7 +356,7 @@ class MuZero:
         self.shared_storage_worker = None
 
     def test(
-        self, render=True, opponent=None, muzero_player=None, num_tests=1, num_gpus=0
+        self, render=True, opponent=None, muzero_player=None, num_tests=1, num_gpus=0, result_arr=False
     ):
         """
         Test the model in a dedicated thread.
@@ -380,7 +380,8 @@ class MuZero:
         self_play_worker = self_play.SelfPlay.options(
             num_cpus=0,
             num_gpus=num_gpus,
-        ).remote(self.checkpoint, self.Game, self.config, numpy.random.randint(10000))
+        ).remote(self.checkpoint, self.Game, self.config, numpy.random.randint(10000), self.opponent_checkpoint if opponent == 'other' else None)
+
         results = []
         for i in range(num_tests):
             print(f"Testing {i+1}/{num_tests}")
@@ -397,19 +398,32 @@ class MuZero:
             )
         self_play_worker.close_game.remote()
 
-        if len(self.config.players) == 1:
-            result = numpy.mean([sum(history.reward_history) for history in results])
+        if result_arr:
+            if len(self.config.players) == 1:
+                result = [sum(history.reward_history) for history in results]
+            else:
+                result = [
+                        sum(
+                            reward
+                            for i, reward in enumerate(history.reward_history)
+                            if history.to_play_history[i - 1] == muzero_player
+                        )
+                        for history in results
+                    ]
         else:
-            result = numpy.mean(
-                [
-                    sum(
-                        reward
-                        for i, reward in enumerate(history.reward_history)
-                        if history.to_play_history[i - 1] == muzero_player
-                    )
-                    for history in results
-                ]
-            )
+            if len(self.config.players) == 1:
+                result = numpy.mean([sum(history.reward_history) for history in results])
+            else:
+                result = numpy.mean(
+                    [
+                        sum(
+                            reward
+                            for i, reward in enumerate(history.reward_history)
+                            if history.to_play_history[i - 1] == muzero_player
+                        )
+                        for history in results
+                    ]
+                )
         return result
 
     def load_model(self, checkpoint_path=None, replay_buffer_path=None):
@@ -443,6 +457,39 @@ class MuZero:
                 self.checkpoint["num_played_steps"] = 0
                 self.checkpoint["num_played_games"] = 0
                 self.checkpoint["num_reanalysed_games"] = 0
+
+    def load_opponent_model(self, checkpoint_path=None, replay_buffer_path=None):
+        """
+        Load a model and/or a saved replay buffer.
+
+        Args:
+            checkpoint_path (str): Path to model.checkpoint or model.weights.
+
+            replay_buffer_path (str): Path to replay_buffer.pkl
+        """
+        # Load checkpoint
+        if checkpoint_path:
+            if os.path.exists(checkpoint_path):
+                self.opponent_checkpoint = torch.load(checkpoint_path)
+                print(f"\nUsing checkpoint from {checkpoint_path}")
+            else:
+                print(f"\nThere is no model saved in {checkpoint_path}.")
+
+        # Load replay buffer
+        if replay_buffer_path:
+            if os.path.exists(replay_buffer_path):
+                with open(replay_buffer_path, "rb") as f:
+                    self.opponent_replay_buffer = pickle.load(f)
+                print(f"\nInitializing replay buffer with {replay_buffer_path}")
+            else:
+                print(
+                    f"Warning: Replay buffer path '{replay_buffer_path}' doesn't exist.  Using empty buffer."
+                )
+                self.opponent_checkpoint["training_step"] = 0
+                self.opponent_checkpoint["num_played_steps"] = 0
+                self.opponent_checkpoint["num_played_games"] = 0
+                self.opponent_checkpoint["num_reanalysed_games"] = 0
+
 
     def diagnose_model(self, horizon):
         """
@@ -562,7 +609,7 @@ def hyperparameter_search(
     return recommendation.value
 
 
-def load_model_menu(muzero, game_name):
+def load_model_menu(muzero, game_name, opponent=False):
     # Configure running options
     options = ["Specify paths manually"] + sorted(glob(f"results/{game_name}/*/"))
     options.reverse()
@@ -592,10 +639,16 @@ def load_model_menu(muzero, game_name):
         checkpoint_path = f"{options[choice]}model.checkpoint"
         replay_buffer_path = f"{options[choice]}replay_buffer.pkl"
 
-    muzero.load_model(
+    if opponent:
+        muzero.load_opponent_model(
         checkpoint_path=checkpoint_path,
         replay_buffer_path=replay_buffer_path,
-    )
+        )
+    else:
+        muzero.load_model(
+            checkpoint_path=checkpoint_path,
+            replay_buffer_path=replay_buffer_path,
+        )
 
 
 if __name__ == "__main__":
@@ -635,6 +688,8 @@ if __name__ == "__main__":
                 "Play against MuZero",
                 "Test the game manually",
                 "Hyperparameter search",
+                "Load pretrained opponent model",
+                "pit",
                 "Exit",
             ]
             print()
@@ -681,6 +736,11 @@ if __name__ == "__main__":
                     game_name, parametrization, budget, parallel_experiments, 20
                 )
                 muzero = MuZero(game_name, best_hyperparameters)
+            elif choice == 7:
+                load_model_menu(muzero, game_name, opponent=True)
+            elif choice == 8:
+                print(muzero.test(render=False, opponent="other", muzero_player=0, num_tests=4, result_arr=True))
+                print(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=4, result_arr=True))
             else:
                 break
             print("\nDone")

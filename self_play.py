@@ -14,7 +14,7 @@ class SelfPlay:
     Class which run in a dedicated thread to play games and save them to the replay-buffer.
     """
 
-    def __init__(self, initial_checkpoint, Game, config, seed):
+    def __init__(self, initial_checkpoint, Game, config, seed, opponent_initial_checkpoint = None):
         self.config = config
         self.game = Game(seed)
 
@@ -27,6 +27,13 @@ class SelfPlay:
         self.model.set_weights(initial_checkpoint["weights"])
         self.model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
         self.model.eval()
+
+        if opponent_initial_checkpoint is not None:
+            # Initialize the opponent network
+            self.opponent_model = models.MuZeroNetwork(self.config)
+            self.opponent_model.set_weights(opponent_initial_checkpoint["weights"])
+            self.opponent_model.to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+            self.opponent_model.eval()
 
     def continuous_self_play(self, shared_storage, replay_buffer, test_mode=False):
         while ray.get(
@@ -157,6 +164,26 @@ class SelfPlay:
                         else 0,
                     )
 
+                    if render:
+                        print(f'Tree depth: {mcts_info["max_tree_depth"]}')
+                        print(
+                            f"Root value for player {self.game.to_play()}: {root.value():.2f}"
+                        )
+                elif opponent == "other":
+                    root, mcts_info = MCTS(self.config).run(
+                        self.opponent_model,
+                        stacked_observations,
+                        self.game.legal_actions(),
+                        self.game.to_play(),
+                        True,
+                    )
+                    action = self.select_action(
+                        root,
+                        temperature
+                        if not temperature_threshold
+                        or len(game_history.action_history) < temperature_threshold
+                        else 0,
+                    )
                     if render:
                         print(f'Tree depth: {mcts_info["max_tree_depth"]}')
                         print(
