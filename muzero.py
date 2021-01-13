@@ -690,6 +690,8 @@ if __name__ == "__main__":
                 "Hyperparameter search",
                 "Load pretrained opponent model",
                 "pit",
+                "set checkpoint iteration",
+                "set checkpoint path",
                 "Exit",
             ]
             print()
@@ -741,6 +743,12 @@ if __name__ == "__main__":
             elif choice == 8:
                 print(muzero.test(render=False, opponent="other", muzero_player=0, num_tests=4, result_arr=True))
                 print(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=4, result_arr=True))
+            elif choice == 9:
+                print("enter checkpoint iteration number")
+                muzero.config.checkpoint_iteration = int(input())
+            elif choice == 10:
+                print("enter new results path")
+                muzero.config.results_path = input()
             else:
                 break
             print("\nDone")

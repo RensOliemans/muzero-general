@@ -67,9 +67,11 @@ class MuZeroConfig:
         self.save_model = True
         self.training_steps = 1000
         self.batch_size = 128
-        self.checkpoint_interval = 10
+        self.checkpoint_interval = 100
         self.value_loss_weight = 1
         self.train_on_gpu = torch.cuda.is_available()
+
+        self.checkpoint_iteration = None
 
         self.optimizer = "SGD"
         self.weight_decay = 1e-4
