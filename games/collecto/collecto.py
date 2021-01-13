@@ -30,12 +30,9 @@ class Collecto:
         self.board, balls = self._do_action(self.board, Action.from_num(action))
         self._balls_of_players[self.player].extend(balls)
 
-        done = self.have_winner() or len(self.legal_actions()) == 0
-        reward = 1 if self.have_winner() else 0
-
         self.player *= -1
 
-        return self.get_observation(), reward, done
+        return self.get_observation(), self._get_reward(), self._is_over()
 
     def get_observation(self):
         """
@@ -64,19 +61,36 @@ class Collecto:
                     legal_actions.append(action.to_num())
         return legal_actions
 
-    def have_winner(self):
-        return len(self.legal_actions()) == 0 and self.is_winner()
+    def _get_reward(self):
+        if self._is_over():
+            i = 5
+        return (
+            0 if not self._is_over() or self._is_tied()
+            else 1 if self._is_winner()
+            else -1
+        )
 
-    def is_winner(self):
-        return self.player == self._calculate_winner()
+    def _is_tied(self):
+        points = self._calculate_points()
+        return points[self.player] == points[self.player * -1]
+
+    def _is_winner(self):
+        return self._is_over() and self.player == self._calculate_winner()
 
     def _calculate_winner(self):
+        points = self._calculate_points()
+        return max(points, key=lambda x: points[x])
+
+    def _is_over(self):
+        return len(self.legal_actions()) == 0
+
+    def _calculate_points(self):
         points = {}
         for player in self._balls_of_players.keys():
             balls = self._balls_of_players[player]
             groups = groupby(sorted(balls))
             points[player] = sum([len(list(b)) // 3 for _, b in groups])
-        return max(points, key=lambda x: points[x])
+        return points
 
     def render(self):
         print(self.board)
