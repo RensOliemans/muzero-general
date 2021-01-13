@@ -60,11 +60,12 @@ class MuZeroConfig:
         self.fc_policy_layers = [16]
 
         ### Training
-        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results",
-                                         os.path.basename(__file__)[:-3], datetime.datetime.now().strftime(
+        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../results",
+                                         "collecto", datetime.datetime.now().strftime(
                 "%Y-%m-%d--%H-%M-%S"))  # Path to store the model weights and TensorBoard logs
+        print(self.results_path)
         self.save_model = True
-        self.training_steps = 100
+        self.training_steps = 1000
         self.batch_size = 128
         self.checkpoint_interval = 10
         self.value_loss_weight = 1
@@ -82,7 +83,7 @@ class MuZeroConfig:
         ### Replay Buffer
         self.replay_buffer_size = 500
         self.num_unroll_steps = 10
-        self.td_steps = 50
+        self.td_steps = 100
         self.PER = True
         self.PER_alpha = 0.5
 
