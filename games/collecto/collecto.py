@@ -12,8 +12,9 @@ from games.collecto.util.shove import shove_board
 
 
 class Collecto:
-    def __init__(self, random=False):
-        self.board = get_board(random)
+    def __init__(self, random_start=False):
+        self.random_start = random_start
+        self.board = get_board(self.random_start)
         self.player = 1
         self._balls_of_players = {1: [], -1: []}
 
@@ -21,7 +22,7 @@ class Collecto:
         return 0 if self.player == 1 else 1
 
     def reset(self):
-        self.board = get_board()
+        self.board = get_board(self.random_start)
         self.player = 1
         self._balls_of_players = {1: [], -1: []}
         return self.get_observation()

@@ -4,7 +4,7 @@ from games.collecto.util.consts import *
 from games.collecto.util.remove_adjacent import _get_equal_neighbours
 
 
-def get_board(random):
+def get_board(random=False):
     return get_random_board() if random else get_static_board()
 
 
