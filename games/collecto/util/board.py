@@ -21,15 +21,16 @@ def get_static_board():
 
 
 def get_random_board():
-    orig_balls = np.array([colour for colour in COLOURS*8])
-    valid = False
-    while not valid:
-        print('Creating random board')
-        balls = np.copy(orig_balls)
-        np.random.shuffle(balls)
-        balls = np.insert(balls, 24, E)
-        balls = np.reshape(balls, (-1, 7))
+    balls = np.array([colour for colour in COLOURS*8])
+    np.random.shuffle(balls)
+    balls = np.insert(balls, 24, E)
+    balls = np.reshape(balls, (-1, 7))
 
-        valid = len(_get_equal_neighbours(balls)) == 0
-
+    equal_neighbours = _get_equal_neighbours(balls)
+    while not len(equal_neighbours) == 0:
+        loc = np.random.choice([i for i in range(48) if not i == 24])
+        x, y = loc // 7, loc % 7
+        dx, dy = equal_neighbours.pop()[1]
+        balls[dx][dy], balls[x][y] = balls[x][y], balls[dx][dy]
+        equal_neighbours = _get_equal_neighbours(balls)
     return balls
