@@ -6,5 +6,5 @@ from games.collecto.muzero_config import MuZeroConfig
 
 class Game(StaticGame):
     def __init__(self, seed=None):
-        self.env = Collecto(random=True)
+        self.env = Collecto(random_start=True)
 
