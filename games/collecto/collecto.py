@@ -4,7 +4,7 @@ from itertools import groupby
 import numpy as np
 
 from games.collecto.action import Action, Direction
-from games.collecto.util.hardcoded_board import get_board
+from games.collecto.util.board import get_board
 from games.collecto.util.consts import *
 from games.collecto.util.exceptions import InvalidMoveException
 from games.collecto.util.remove_adjacent import remove_adjacent
@@ -12,8 +12,8 @@ from games.collecto.util.shove import shove_board
 
 
 class Collecto:
-    def __init__(self):
-        self.board = get_board()
+    def __init__(self, random=False):
+        self.board = get_board(random)
         self.player = 1
         self._balls_of_players = {1: [], -1: []}
 
@@ -64,6 +64,11 @@ class Collecto:
     def _get_reward(self):
         if self._is_over():
             i = 5
+
+        if not self._is_over():
+            return 0
+        reward = 0 if not self._is_over() or self._is_tied() else 1 if self._is_winner() else -1
+
         return (
             0 if not self._is_over() or self._is_tied()
             else 1 if self._is_winner()
