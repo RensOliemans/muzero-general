@@ -1,5 +1,4 @@
 import numpy as np
-import time
 
 from games.collecto.util.consts import *
 from games.collecto.util.remove_adjacent import _get_equal_neighbours
@@ -25,15 +24,12 @@ def get_random_board():
     orig_balls = np.array([colour for colour in COLOURS*8])
     valid = False
     while not valid:
-        balls = np.copy(orig_balls)
         print('Creating random board')
+        balls = np.copy(orig_balls)
         np.random.shuffle(balls)
         balls = np.insert(balls, 24, E)
         balls = np.reshape(balls, (-1, 7))
 
-        print(balls)
-        print(_get_equal_neighbours(balls))
-        time.sleep(10)
         valid = len(_get_equal_neighbours(balls)) == 0
 
     return balls
