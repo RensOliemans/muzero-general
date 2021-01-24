@@ -21,7 +21,7 @@ class MuZeroConfig:
         ### Self-Play
         # todo: tune params
         self.num_workers = 1
-        self.selfplay_on_gpu = False
+        self.selfplay_on_gpu = True
         self.max_moves = 500
         self.num_simulations = 50
         self.discount = 0.997
