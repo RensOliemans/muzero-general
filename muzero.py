@@ -403,11 +403,7 @@ class MuZero:
                 result = [sum(history.reward_history) for history in results]
             else:
                 result = [
-                        sum(
-                            reward
-                            for i, reward in enumerate(history.reward_history)
-                            if history.to_play_history[i - 1] == muzero_player
-                        )
+                        history.reward_history[-1] if history.to_play_history[-1] == muzero_player else history.reward_history[-1] * -1
                         for history in results
                     ]
         else:
