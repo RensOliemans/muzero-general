@@ -678,6 +678,7 @@ if __name__ == "__main__":
         game_name = games[choice]
         muzero = MuZero(game_name)
 
+
         while True:
             # Configure running options
             options = [
@@ -692,6 +693,7 @@ if __name__ == "__main__":
                 "pit",
                 "set checkpoint iteration",
                 "set checkpoint path",
+                "play tournament",
                 "Exit",
             ]
             print()
@@ -749,6 +751,29 @@ if __name__ == "__main__":
             elif choice == 10:
                 print("enter new results path")
                 muzero.config.results_path = input()
+            elif choice == 11:
+                print("enter checpoint directory path")
+                p1path = input()
+                print("enter opponent checpoint directory path")
+                p2path = input()
+                print("enter tournament result path")
+                respath = input()
+                print("enter total checkpoint count")
+                checkpoint_count = int(input())
+                print("enter checkpoint step")
+                checkpoint_step = int(input())
+                print("how many games as each side?")
+                games_to_play = int(input())
+                with open(respath, 'w') as resfile:
+                    resfile.write("checkpoint_index," + ",".join([f"game_{i}" for i in range(games_to_play * 2)]) + "\n")
+                for i in range(0,checkpoint_count,checkpoint_step):
+                    muzero.load_model(f"{p1path}/model-{i}.checkpoint.zip")
+                    muzero.load_opponent_model(f"{p1path}/model-{i}.checkpoint.zip")
+                    result = muzero.test(render=False, opponent="other", muzero_player=0, num_tests=games_to_play, result_arr=True)
+                    result.extend(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=games_to_play, result_arr=True))
+                    result_string = f"{i}," + ",".join([str(v) for v in result])
+                    with open(respath, 'a') as resfile:
+                        resfile.write(result_string + "\n")
             else:
                 break
             print("\nDone")
