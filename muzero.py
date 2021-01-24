@@ -760,6 +760,8 @@ if __name__ == "__main__":
                 p2path = input()
                 print("enter tournament result path")
                 respath = input()
+                print("enter starting checkpoint")
+                checkpoint_start = int(input())
                 print("enter total checkpoint count")
                 checkpoint_count = int(input())
                 print("enter checkpoint step")
@@ -771,7 +773,7 @@ if __name__ == "__main__":
 
                 with open(respath, 'w') as resfile:
                     resfile.write("checkpoint_index," + ",".join([f"game_{i}" for i in range(games_to_play * 2)]) + "\n")
-                for i in range(0,checkpoint_count,checkpoint_step):
+                for i in range(checkpoint_start,checkpoint_count,checkpoint_step):
                     if add_zip:
                         muzero.load_model(f"{p1path}/model-{i}.checkpoint.zip")
                         muzero.load_opponent_model(f"{p1path}/model-{i}.checkpoint.zip")
