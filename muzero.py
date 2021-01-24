@@ -743,8 +743,10 @@ if __name__ == "__main__":
             elif choice == 7:
                 load_model_menu(muzero, game_name, opponent=True)
             elif choice == 8:
-                print(muzero.test(render=False, opponent="other", muzero_player=0, num_tests=4, result_arr=True))
-                print(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=4, result_arr=True))
+                print("how many games each side?")
+                num_games = int(input())
+                print(muzero.test(render=False, opponent="other", muzero_player=0, num_tests=num_games, result_arr=True))
+                print(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=num_games, result_arr=True))
             elif choice == 9:
                 print("enter checkpoint iteration number")
                 muzero.config.checkpoint_iteration = int(input())
@@ -764,11 +766,18 @@ if __name__ == "__main__":
                 checkpoint_step = int(input())
                 print("how many games as each side?")
                 games_to_play = int(input())
+                print("add zip? [y|N]")
+                add_zip = input() == "y"
+
                 with open(respath, 'w') as resfile:
                     resfile.write("checkpoint_index," + ",".join([f"game_{i}" for i in range(games_to_play * 2)]) + "\n")
                 for i in range(0,checkpoint_count,checkpoint_step):
-                    muzero.load_model(f"{p1path}/model-{i}.checkpoint.zip")
-                    muzero.load_opponent_model(f"{p1path}/model-{i}.checkpoint.zip")
+                    if add_zip:
+                        muzero.load_model(f"{p1path}/model-{i}.checkpoint.zip")
+                        muzero.load_opponent_model(f"{p1path}/model-{i}.checkpoint.zip")
+                    else:
+                        muzero.load_model(f"{p1path}/model-{i}.checkpoint")
+                        muzero.load_opponent_model(f"{p1path}/model-{i}.checkpoint")
                     result = muzero.test(render=False, opponent="other", muzero_player=0, num_tests=games_to_play, result_arr=True)
                     result.extend(muzero.test(render=False, opponent="other", muzero_player=1, num_tests=games_to_play, result_arr=True))
                     result_string = f"{i}," + ",".join([str(v) for v in result])
