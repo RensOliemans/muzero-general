@@ -65,7 +65,7 @@ class MuZeroConfig:
                 "%Y-%m-%d--%H-%M-%S"))  # Path to store the model weights and TensorBoard logs
         print(self.results_path)
         self.save_model = True
-        self.training_steps = 100000
+        self.training_steps = 1000000
         self.batch_size = 128
         self.checkpoint_interval = 100
         self.value_loss_weight = 1
